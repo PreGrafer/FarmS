@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.sign.mapper.LeaveRecordMapper">
+    
+    <resultMap type="LeaveRecord" id="LeaveRecordResult">
+        <result property="leaveId"    column="leave_id"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="haninTime"    column="hanin_time"    />
+        <result property="leaveStartTime"    column="leave_start_time"    />
+        <result property="leaveEndTime"    column="leave_end_time"    />
+        <result property="leaveState"    column="leave_state"    />
+        <result property="reason"    column="reason"    />
+        <result property="reply"    column="reply"    />
+    </resultMap>
+
+    <sql id="selectLeaveRecordVo">
+        select leave_id, dept_id, user_id, hanin_time, leave_start_time, leave_end_time, leave_state, reason, reply from leave_record
+    </sql>
+
+    <select id="selectLeaveRecordList" parameterType="LeaveRecord" resultMap="LeaveRecordResult">
+        <include refid="selectLeaveRecordVo"/>
+        <where>  
+            <if test="deptId != null "> and dept_id = #{deptId}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="haninTime != null "> and hanin_time = #{haninTime}</if>
+            <if test="leaveState != null "> and leave_state = #{leaveState}</if>
+        </where>
+    </select>
+    
+    <select id="selectLeaveRecordByLeaveId" parameterType="Long" resultMap="LeaveRecordResult">
+        <include refid="selectLeaveRecordVo"/>
+        where leave_id = #{leaveId}
+    </select>
+
+    <insert id="insertLeaveRecord" parameterType="LeaveRecord" useGeneratedKeys="true" keyProperty="leaveId">
+        insert into leave_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deptId != null">dept_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="haninTime != null">hanin_time,</if>
+            <if test="leaveStartTime != null">leave_start_time,</if>
+            <if test="leaveEndTime != null">leave_end_time,</if>
+            <if test="leaveState != null">leave_state,</if>
+            <if test="reason != null">reason,</if>
+            <if test="reply != null">reply,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="deptId != null">#{deptId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="haninTime != null">#{haninTime},</if>
+            <if test="leaveStartTime != null">#{leaveStartTime},</if>
+            <if test="leaveEndTime != null">#{leaveEndTime},</if>
+            <if test="leaveState != null">#{leaveState},</if>
+            <if test="reason != null">#{reason},</if>
+            <if test="reply != null">#{reply},</if>
+         </trim>
+    </insert>
+
+    <update id="updateLeaveRecord" parameterType="LeaveRecord">
+        update leave_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="haninTime != null">hanin_time = #{haninTime},</if>
+            <if test="leaveStartTime != null">leave_start_time = #{leaveStartTime},</if>
+            <if test="leaveEndTime != null">leave_end_time = #{leaveEndTime},</if>
+            <if test="leaveState != null">leave_state = #{leaveState},</if>
+            <if test="reason != null">reason = #{reason},</if>
+            <if test="reply != null">reply = #{reply},</if>
+        </trim>
+        where leave_id = #{leaveId}
+    </update>
+
+    <delete id="deleteLeaveRecordByLeaveId" parameterType="Long">
+        delete from leave_record where leave_id = #{leaveId}
+    </delete>
+
+    <delete id="deleteLeaveRecordByLeaveIds" parameterType="String">
+        delete from leave_record where leave_id in 
+        <foreach item="leaveId" collection="array" open="(" separator="," close=")">
+            #{leaveId}
+        </foreach>
+    </delete>
+</mapper>

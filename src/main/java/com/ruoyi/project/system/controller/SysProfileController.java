@@ -52,6 +52,16 @@ public class SysProfileController extends BaseController
         return ajax;
     }
 
+    @GetMapping(("/ids"))
+    public AjaxResult ids()
+    {
+        LoginUser loginUser = getLoginUser();
+        AjaxResult ajax = AjaxResult.success();
+        ajax.put("userId", loginUser.getUserId());
+        ajax.put("deptId", loginUser.getDeptId());
+        return ajax;
+    }
+
     /**
      * 修改用户
      */

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.sign.mapper.SignRecordMapper">
+    
+    <resultMap type="SignRecord" id="SignRecordResult">
+        <result property="recordId"    column="record_id"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="signTime"    column="sign_time"    />
+        <result property="signState"    column="sign_state"    />
+        <result property="signType"    column="sign_type"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectSignRecordVo">
+        select record_id, dept_id, user_id, sign_time, sign_state, sign_type, update_time from sign_record
+    </sql>
+
+    <select id="selectSignRecordList" parameterType="SignRecord" resultMap="SignRecordResult">
+        <include refid="selectSignRecordVo"/>
+        <where>  
+            <if test="deptId != null "> and dept_id = #{deptId}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="signState != null  and signState != ''"> and sign_state = #{signState}</if>
+            <if test="signType != null  and signType != ''"> and sign_type = #{signType}</if>
+        </where>
+    </select>
+    
+    <select id="selectSignRecordByRecordId" parameterType="Long" resultMap="SignRecordResult">
+        <include refid="selectSignRecordVo"/>
+        where record_id = #{recordId}
+    </select>
+
+    <select id="selectSignRecordByUserId" parameterType="Long" resultMap="SignRecordResult">
+        <include refid="selectSignRecordVo"/>
+        WHERE user_id = #{userId}
+    </select>
+
+    <insert id="insertSignRecord" parameterType="SignRecord" useGeneratedKeys="true" keyProperty="recordId">
+        insert into sign_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deptId != null">dept_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="signTime != null">sign_time,</if>
+            <if test="signState != null">sign_state,</if>
+            <if test="signType != null">sign_type,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="deptId != null">#{deptId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="signTime != null">#{signTime},</if>
+            <if test="signState != null">#{signState},</if>
+            <if test="signType != null">#{signType},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSignRecord" parameterType="SignRecord">
+        update sign_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="signTime != null">sign_time = #{signTime},</if>
+            <if test="signState != null">sign_state = #{signState},</if>
+            <if test="signType != null">sign_type = #{signType},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where record_id = #{recordId}
+    </update>
+
+    <delete id="deleteSignRecordByRecordId" parameterType="Long">
+        delete from sign_record where record_id = #{recordId}
+    </delete>
+
+    <delete id="deleteSignRecordByRecordIds" parameterType="String">
+        delete from sign_record where record_id in 
+        <foreach item="recordId" collection="array" open="(" separator="," close=")">
+            #{recordId}
+        </foreach>
+    </delete>
+</mapper>

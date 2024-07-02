@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.field.mapper.HarvestrecordsMapper">
+    
+    <resultMap type="Harvestrecords" id="HarvestrecordsResult">
+        <result property="harvestId"    column="harvest_id"    />
+        <result property="cropId"    column="Crop_id"    />
+        <result property="fieldId"    column="Field_id"    />
+        <result property="harvestDate"    column="harvest_date"    />
+        <result property="harvestAmount"    column="harvest_amount"    />
+    </resultMap>
+
+    <sql id="selectHarvestrecordsVo">
+        select harvest_id, Crop_id, Field_id, harvest_date, harvest_amount from harvestrecords
+    </sql>
+
+    <select id="selectHarvestrecordsList" parameterType="Harvestrecords" resultMap="HarvestrecordsResult">
+        <include refid="selectHarvestrecordsVo"/>
+        <where>  
+            <if test="cropId != null "> and Crop_id = #{cropId}</if>
+            <if test="fieldId != null "> and Field_id = #{fieldId}</if>
+            <if test="harvestDate != null "> and harvest_date = #{harvestDate}</if>
+            <if test="harvestAmount != null "> and harvest_amount = #{harvestAmount}</if>
+        </where>
+    </select>
+    
+    <select id="selectHarvestrecordsByHarvestId" parameterType="Long" resultMap="HarvestrecordsResult">
+        <include refid="selectHarvestrecordsVo"/>
+        where harvest_id = #{harvestId}
+    </select>
+
+    <insert id="insertHarvestrecords" parameterType="Harvestrecords" useGeneratedKeys="true" keyProperty="harvestId">
+        insert into harvestrecords
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="cropId != null">Crop_id,</if>
+            <if test="fieldId != null">Field_id,</if>
+            <if test="harvestDate != null">harvest_date,</if>
+            <if test="harvestAmount != null">harvest_amount,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="cropId != null">#{cropId},</if>
+            <if test="fieldId != null">#{fieldId},</if>
+            <if test="harvestDate != null">#{harvestDate},</if>
+            <if test="harvestAmount != null">#{harvestAmount},</if>
+         </trim>
+    </insert>
+
+    <update id="updateHarvestrecords" parameterType="Harvestrecords">
+        update harvestrecords
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="cropId != null">Crop_id = #{cropId},</if>
+            <if test="fieldId != null">Field_id = #{fieldId},</if>
+            <if test="harvestDate != null">harvest_date = #{harvestDate},</if>
+            <if test="harvestAmount != null">harvest_amount = #{harvestAmount},</if>
+        </trim>
+        where harvest_id = #{harvestId}
+    </update>
+
+    <delete id="deleteHarvestrecordsByHarvestId" parameterType="Long">
+        delete from harvestrecords where harvest_id = #{harvestId}
+    </delete>
+
+    <delete id="deleteHarvestrecordsByHarvestIds" parameterType="String">
+        delete from harvestrecords where harvest_id in 
+        <foreach item="harvestId" collection="array" open="(" separator="," close=")">
+            #{harvestId}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.field.mapper.FieldsMapper">
+    
+    <resultMap type="Fields" id="FieldsResult">
+        <result property="fieldId"    column="field_id"    />
+        <result property="area"    column="area"    />
+        <result property="latitude"    column="latitude"    />
+        <result property="longitude"    column="longitude"    />
+        <result property="soilType"    column="soil_type"    />
+        <result property="currentCropId"    column="current_crop_id"    />
+    </resultMap>
+
+    <sql id="selectFieldsVo">
+        select field_id, area, latitude, longitude, soil_type, current_crop_id from fields
+    </sql>
+
+    <select id="selectFieldsList" parameterType="Fields" resultMap="FieldsResult">
+        <include refid="selectFieldsVo"/>
+        <where>  
+            <if test="fieldId != null "> and field_id = #{fieldId}</if>
+            <if test="soilType != null  and soilType != ''"> and soil_type = #{soilType}</if>
+            <if test="currentCropId != null "> and current_crop_id = #{currentCropId}</if>
+        </where>
+    </select>
+    
+    <select id="selectFieldsByFieldId" parameterType="Long" resultMap="FieldsResult">
+        <include refid="selectFieldsVo"/>
+        where field_id = #{fieldId}
+    </select>
+
+    <insert id="insertFields" parameterType="Fields" useGeneratedKeys="true" keyProperty="fieldId">
+        insert into fields
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="area != null">area,</if>
+            <if test="latitude != null">latitude,</if>
+            <if test="longitude != null">longitude,</if>
+            <if test="soilType != null and soilType != ''">soil_type,</if>
+            <if test="currentCropId != null">current_crop_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="area != null">#{area},</if>
+            <if test="latitude != null">#{latitude},</if>
+            <if test="longitude != null">#{longitude},</if>
+            <if test="soilType != null and soilType != ''">#{soilType},</if>
+            <if test="currentCropId != null">#{currentCropId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateFields" parameterType="Fields">
+        update fields
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="area != null">area = #{area},</if>
+            <if test="latitude != null">latitude = #{latitude},</if>
+            <if test="longitude != null">longitude = #{longitude},</if>
+            <if test="soilType != null and soilType != ''">soil_type = #{soilType},</if>
+            <if test="currentCropId != null">current_crop_id = #{currentCropId},</if>
+        </trim>
+        where field_id = #{fieldId}
+    </update>
+
+    <delete id="deleteFieldsByFieldId" parameterType="Long">
+        delete from fields where field_id = #{fieldId}
+    </delete>
+
+    <delete id="deleteFieldsByFieldIds" parameterType="String">
+        delete from fields where field_id in 
+        <foreach item="fieldId" collection="array" open="(" separator="," close=")">
+            #{fieldId}
+        </foreach>
+    </delete>
+</mapper>

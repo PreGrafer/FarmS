@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.field.mapper.CropsMapper">
+    
+    <resultMap type="Crops" id="CropsResult">
+        <result property="cropId"    column="crop_id"    />
+        <result property="name"    column="name"    />
+        <result property="growthCycle"    column="growth_cycle"    />
+        <result property="yield"    column="yield"    />
+    </resultMap>
+
+    <sql id="selectCropsVo">
+        select crop_id, name, growth_cycle, yield from crops
+    </sql>
+
+    <select id="selectCropsList" parameterType="Crops" resultMap="CropsResult">
+        <include refid="selectCropsVo"/>
+        <where>  
+            <if test="cropId != null "> and crop_id = #{cropId}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="growthCycle != null "> and growth_cycle = #{growthCycle}</if>
+            <if test="yield != null "> and yield = #{yield}</if>
+        </where>
+    </select>
+    
+    <select id="selectCropsByCropId" parameterType="Long" resultMap="CropsResult">
+        <include refid="selectCropsVo"/>
+        where crop_id = #{cropId}
+    </select>
+
+    <insert id="insertCrops" parameterType="Crops" useGeneratedKeys="true" keyProperty="cropId">
+        insert into crops
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">name,</if>
+            <if test="growthCycle != null">growth_cycle,</if>
+            <if test="yield != null">yield,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="growthCycle != null">#{growthCycle},</if>
+            <if test="yield != null">#{yield},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCrops" parameterType="Crops">
+        update crops
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="growthCycle != null">growth_cycle = #{growthCycle},</if>
+            <if test="yield != null">yield = #{yield},</if>
+        </trim>
+        where crop_id = #{cropId}
+    </update>
+
+    <delete id="deleteCropsByCropId" parameterType="Long">
+        delete from crops where crop_id = #{cropId}
+    </delete>
+
+    <delete id="deleteCropsByCropIds" parameterType="String">
+        delete from crops where crop_id in 
+        <foreach item="cropId" collection="array" open="(" separator="," close=")">
+            #{cropId}
+        </foreach>
+    </delete>
+</mapper>
