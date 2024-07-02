@@ -78,6 +78,13 @@ export function getUserProfile() {
   })
 }
 
+export function getIds(){
+  return request({
+    url: '/system/user/profile/ids',
+    method: 'get'
+  })
+}
+
 // 修改用户个人信息
 export function updateUserProfile(data) {
   return request({
