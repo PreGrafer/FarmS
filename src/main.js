@@ -12,6 +12,8 @@ import App from './App'
 import store from './store'
 import router from './router'
 import directive from './directive' // directive
+import ECharts from 'vue-echarts'
+import 'echarts'
 
 // 注册指令
 import plugins from './plugins' // plugins
@@ -55,6 +57,7 @@ app.config.globalProperties.handleTree = handleTree
 app.config.globalProperties.addDateRange = addDateRange
 app.config.globalProperties.selectDictLabel = selectDictLabel
 app.config.globalProperties.selectDictLabels = selectDictLabels
+app.config.productionTip = false
 
 // 全局组件挂载
 app.component('DictTag', DictTag)
@@ -71,6 +74,7 @@ app.use(store)
 app.use(plugins)
 app.use(elementIcons)
 app.component('svg-icon', SvgIcon)
+app.component('v-chart', ECharts)
 
 directive(app)
 

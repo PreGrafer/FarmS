@@ -9,11 +9,50 @@ export function listLeave(query) {
   })
 }
 
+// 查询请假记录列表
+export function deptListLeave(deptId) {
+  return request({
+    url: '/sign/leave/list/'+ deptId,
+    method: 'get'
+  })
+}
+export function cancelLeave(leaveId) {
+  return request({
+    url: '/sign/leave/cancelLeave',
+    method: 'post',
+    params: {leaveId}
+  })
+}
+
+export function leaveApply(data) {
+  return request({
+    url: '/sign/leave/leaveApply',
+    method: 'post',
+    params: data
+  })
+}
+
+export function getLastLeave(userId) {
+  return request({
+    url: '/sign/leave/userLastLeave/'+userId,
+    method: 'get'
+  })
+}
+
 // 查询请假记录详细
 export function getLeave(leaveId) {
   return request({
-    url: '/sign/leave/' + leaveId,
+    url: '/sign/leave/info/' + leaveId,
     method: 'get'
+  })
+}
+
+// 查询请假记录详细
+export function updateState(data) {
+  return request({
+    url: '/sign/leave//updateState',
+    method: 'post',
+    params: data
   })
 }
 
