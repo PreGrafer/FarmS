@@ -38,6 +38,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         WHERE user_id = #{userId}
     </select>
 
+    <select id="selectSignRecordByDeptId" parameterType="Long" resultMap="SignRecordResult">
+        <include refid="selectSignRecordVo"/>
+        WHERE dept_id = #{deptId}
+    </select>
+
+
     <insert id="insertSignRecord" parameterType="SignRecord" useGeneratedKeys="true" keyProperty="recordId">
         insert into sign_record
         <trim prefix="(" suffix=")" suffixOverrides=",">

@@ -20,6 +20,15 @@ public interface LeaveRecordMapper
     public LeaveRecord selectLeaveRecordByLeaveId(Long leaveId);
 
     /**
+     * 查询部门请假记录
+     *
+     * @param deptId 部门id
+     * @return 请假记录
+     */
+    public List<LeaveRecord> selectLeaveRecordByDeptIdAndLeaveState(Long deptId,Long leaveState);
+
+
+    /**
      * 查询请假记录列表
      * 
      * @param leaveRecord 请假记录
@@ -58,4 +67,11 @@ public interface LeaveRecordMapper
      * @return 结果
      */
     public int deleteLeaveRecordByLeaveIds(Long[] leaveIds);
+
+
+    public LeaveRecord selectLeaveRecordByUserIdAndLeaveState(Long userId);
+
+    public List<LeaveRecord> selectLeaveRecordByUserId(Long userId,Long leaveState);
+
+    public List<LeaveRecord> selectLeaveRecordByDeptId(Long deptId,Long leaveState);
 }

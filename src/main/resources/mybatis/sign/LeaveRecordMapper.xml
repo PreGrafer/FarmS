@@ -35,6 +35,26 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where leave_id = #{leaveId}
     </select>
 
+    <select id="selectLeaveRecordByDeptIdAndLeaveState" parameterType="map" resultMap="LeaveRecordResult">
+        <include refid="selectLeaveRecordVo"/>
+        where dept_id = #{deptId} and leave_state = #{leaveState}
+    </select>
+
+    <select id="selectLeaveRecordByUserIdAndLeaveState" parameterType="map" resultMap="LeaveRecordResult">
+        <include refid="selectLeaveRecordVo"/>
+        where hanin_time = (select max(hanin_time) from leave_record where user_id = #{userId})
+    </select>
+
+    <select id="selectLeaveRecordByUserId" parameterType="map" resultMap="LeaveRecordResult">
+        <include refid="selectLeaveRecordVo"/>
+        user_id = #{userId} and leave_state = #{leaveState}
+    </select>
+
+    <select id="selectLeaveRecordByDeptId" parameterType="map" resultMap="LeaveRecordResult">
+        <include refid="selectLeaveRecordVo"/>
+        where dept_id = #{deptId} and leave_state = #{leaveState}
+    </select>
+
     <insert id="insertLeaveRecord" parameterType="LeaveRecord" useGeneratedKeys="true" keyProperty="leaveId">
         insert into leave_record
         <trim prefix="(" suffix=")" suffixOverrides=",">

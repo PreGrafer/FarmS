@@ -1,7 +1,10 @@
 package com.ruoyi.project.sign.service;
 
 import java.util.List;
+
+import com.ruoyi.project.sign.domain.AttendanceRecord;
 import com.ruoyi.project.sign.domain.LeaveRecord;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * 请假记录Service接口
@@ -58,4 +61,26 @@ public interface ILeaveRecordService
      * @return 结果
      */
     public int deleteLeaveRecordByLeaveId(Long leaveId);
+
+
+    /**
+     * 上传leave_id 修改申请状态为3
+     *
+     * @param leaveId 请假记录主键
+     * @return 结果
+     */
+    public int updateLeaveStateToThreeByLeaveID(Long leaveId);
+
+
+
+    public List<LeaveRecord> selectLeaveRecordByDeptId(Long deptID);
+
+
+    public int updateLeaveStateAndReply(Long leaveId,  Long leaveState,  String reply);
+
+    public LeaveRecord selectLeaveRecordByUserIdAndLeaveState(Long userID);
+
+    public AttendanceRecord selectLeaveRecordByDeptIdByMonth(Long deptID);
+
+    public AttendanceRecord selectLeaveRecordByUserIdByMonth(Long userID);
 }

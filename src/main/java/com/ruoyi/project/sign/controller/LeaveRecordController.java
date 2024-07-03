@@ -1,17 +1,14 @@
 package com.ruoyi.project.sign.controller;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.ruoyi.framework.aspectj.lang.annotation.Log;
 import com.ruoyi.framework.aspectj.lang.enums.BusinessType;
 import com.ruoyi.project.sign.domain.LeaveRecord;
@@ -63,7 +60,7 @@ public class LeaveRecordController extends BaseController
      * 获取请假记录详细信息
      */
     @PreAuthorize("@ss.hasPermi('sign:leave:query')")
-    @GetMapping(value = "/{leaveId}")
+    @GetMapping(value = "/info/{leaveId}")
     public AjaxResult getInfo(@PathVariable("leaveId") Long leaveId)
     {
         return success(leaveRecordService.selectLeaveRecordByLeaveId(leaveId));
@@ -79,6 +76,36 @@ public class LeaveRecordController extends BaseController
     {
         return toAjax(leaveRecordService.insertLeaveRecord(leaveRecord));
     }
+
+    /**
+     * 新增请假记录
+     *  上传部门id 个人id 请假理由 请假时间 2024-07-11 2024-07-18
+     *
+     *
+     */
+    @PreAuthorize("@ss.hasPermi('sign:leave:holi')")
+    @Log(title = "请假记录", businessType = BusinessType.INSERT)
+    @PostMapping("/leaveApply")
+    public AjaxResult leaveApply(@RequestParam Long deptId ,@RequestParam Long userId,@RequestParam String reason,@RequestParam String leaveBegin,@RequestParam String leaveEnd)
+    {
+        LeaveRecord leaveRecord=new LeaveRecord();
+        leaveRecord.setLeaveState(0L);
+        leaveRecord.setDeptId(deptId);
+        leaveRecord.setUserId(userId);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        try{
+            leaveRecord.setLeaveStartTime(dateFormat.parse(leaveBegin));
+            leaveRecord.setLeaveEndTime(dateFormat.parse(leaveEnd));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        leaveRecord.setReason(reason);
+        Date date=new Date();
+        leaveRecord.setHaninTime(date);
+        return toAjax(leaveRecordService.insertLeaveRecord(leaveRecord));
+    }
+
+
 
     /**
      * 修改请假记录
@@ -100,5 +127,64 @@ public class LeaveRecordController extends BaseController
     public AjaxResult remove(@PathVariable Long[] leaveIds)
     {
         return toAjax(leaveRecordService.deleteLeaveRecordByLeaveIds(leaveIds));
+    }
+
+    /**
+     * 上传leave_id 修改申请状态为3
+     */
+    @PreAuthorize("@ss.hasPermi('sign:leave:holi')")
+    @Log(title = "请假记录", businessType = BusinessType.UPDATE)
+    @PostMapping("/cancelLeave")
+    public AjaxResult updateLeaveStateToThreeByLeaveID(@RequestParam Long leaveId)
+    {
+        return toAjax(leaveRecordService.updateLeaveStateToThreeByLeaveID(leaveId));
+    }
+
+    /**
+     * 上传部门id，返回该部门已申请的请假列表
+     */
+    @GetMapping(value = "/list/{deptId}")
+    public TableDataInfo getByDeptID(@PathVariable Long deptId)
+    {
+        List<LeaveRecord> list = leaveRecordService.selectLeaveRecordByDeptId(deptId);
+        return getDataTable(list);
+    }
+
+    /**
+     * 上传leave_id 修改申请状态,修改reply
+     */
+    @Log(title = "请假记录", businessType = BusinessType.UPDATE)
+    @PostMapping("/updateState")
+    public AjaxResult updateLeaveStateToThreeByLeaveID(@RequestParam Long leaveId,@RequestParam Long leaveState,@RequestParam String reply)
+    {
+        return toAjax(leaveRecordService.updateLeaveStateAndReply(leaveId,leaveState,reply));
+    }
+
+    /**
+     * 上传userid，返回最新的的请假记录
+     */
+    @GetMapping(value = "/userLastLeave/{userId}")
+    public AjaxResult getByuserID(@PathVariable Long userId)
+    {
+        return success(leaveRecordService.selectLeaveRecordByUserIdAndLeaveState(userId));
+    }
+    /**
+     *
+     * 上传一个部门id 返回正常签到次数，早退迟到次数，请假天数
+     */
+    @GetMapping(value = "/month/{deptId}")
+    public AjaxResult getMonthByDeptID(@PathVariable Long deptId)
+    {
+        return success(leaveRecordService.selectLeaveRecordByDeptIdByMonth(deptId));
+    }
+
+    /**
+     *
+     * 上传一个userid 返回正常签到次数，早退迟到次数，请假天数
+     */
+    @GetMapping(value = "/month/{userId}")
+    public AjaxResult getMonthByUserID(@PathVariable Long userId)
+    {
+        return success(leaveRecordService.selectLeaveRecordByUserIdByMonth(userId));
     }
 }

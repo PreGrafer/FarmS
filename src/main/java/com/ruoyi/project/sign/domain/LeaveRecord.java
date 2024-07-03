@@ -55,6 +55,7 @@ public class LeaveRecord extends BaseEntity
     @Excel(name = "审批片语")
     private String reply;
 
+
     public void setLeaveId(Long leaveId) 
     {
         this.leaveId = leaveId;

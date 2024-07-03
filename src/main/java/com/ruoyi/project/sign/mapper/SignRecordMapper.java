@@ -27,7 +27,7 @@ public interface SignRecordMapper
      */
     public List<SignRecord> selectSignRecordByUserId(Long userID);
 
-
+    public List<SignRecord> selectSignRecordByDeptId(Long deptID);
     /**
      * 查询考勤记录列表
      * 
