@@ -98,6 +98,8 @@
       <el-table-column label="当前种植的作物id" align="center" prop="currentCropId" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
+          <el-button link type="primary" @click="showMap(scope.row)" v-hasPermi="['field:fields:map']">定位</el-button>
+          <el-button link type="primary" @click="weather(scope.row)" v-hasPermi="['field:fields:wea']">天气</el-button>
           <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['field:fields:edit']">修改</el-button>
           <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['field:fields:remove']">删除</el-button>
         </template>
@@ -145,6 +147,18 @@
         </div>
       </template>
     </el-dialog>
+    <!-- 天气 -->
+      <el-dialog :title="wea_title" v-model="wea_open" width="900px" append-to-body>
+        <el-row :gutter="20">
+      <el-col :span="12" v-for="(day, index) in weatherData" :key="index">
+        <weather-card :weatherData="day"></weather-card>
+      </el-col>
+    </el-row>
+      </el-dialog>
+    <!-- 地图 -->
+      <el-dialog :title="map_title" v-model="map_open" width="800px" append-to-body>
+          <div id="map" style="width: 100%; height: 600px"></div>
+      </el-dialog>
 
     <!-- 用户导入对话框 -->
       <el-dialog :title="upload.title" v-model="upload.open" width="400px" append-to-body>
@@ -180,14 +194,20 @@
 </template>
 
 <script setup name="Fields">
+import AMapLoader from '@amap/amap-jsapi-loader';
+import WeatherCard from './weatherCard.vue';
 import { getToken } from "@/utils/auth";
-import { listFields, getFields, delFields, addFields, updateFields } from "@/api/field/fields";
+import {listFields, getFields, delFields, addFields, updateFields, weatherGet} from "@/api/field/fields";
 
 const { proxy } = getCurrentInstance();
 const { soil_type } = proxy.useDict('soil_type');
 
 const fieldsList = ref([]);
 const open = ref(false);
+const wea_open = ref(false);
+const wea_title = ref("");
+const map_open = ref(false);
+const map_title = ref("");
 const loading = ref(true);
 const showSearch = ref(true);
 const ids = ref([]);
@@ -195,6 +215,11 @@ const single = ref(true);
 const multiple = ref(true);
 const total = ref(0);
 const title = ref("");
+const weatherData = ref([]);
+const wea_config = ref({
+  key: 'a202ad4b576f48639cd0367bddbf4492',
+  location: ''
+})
 
 const data = reactive({
   form: {},
@@ -368,6 +393,69 @@ function handleExport() {
   proxy.download('field/fields/export', {
     ...queryParams.value
   }, `fields_${new Date().getTime()}.xlsx`)
+}
+function weather(row){
+  wea_config.value.location = row.longitude + ',' + row.latitude;
+  wea_open.value = true;
+  wea_title.value = row.fieldId + "未来7天天气预报";
+  weatherGet(wea_config.value).then(response=>{
+    weatherData.value=response.data.daily;
+  })
+}
+
+function showMap(row) {
+  // 假设 map_open 和 map_title 已经在某处定义（可能是 Vue 的 ref 或其他状态管理）
+  map_open.value = true;
+  map_title.value = row.fieldId + "农田定位";
+
+  window._AMapSecurityConfig = {
+    // 请确保不要公开您的 JS 安全代码
+    securityJsCode: 'f212b0057b288753ba073caba37d386a',
+  };
+
+  AMapLoader.load({
+    key: 'cb853e42226eaa81f7440eebe7538e69', // 请确保不要公开您的 API 密钥
+    version: '2.0',
+    plugins: ['AMap.Geolocation', 'AMap.PlaceSearch', 'AMap.Scale'],
+    AMapUI: {
+      version: '1.1',
+      plugins: [],
+    },
+    Loca:{
+        version: '2.0.0'
+    },
+  })
+    .then(AMap => {
+      // 确保 HTML 中有一个 id="map" 的元素
+      const map = new AMap.Map("map", {
+        resizeEnable: true,
+        zoom: 15,
+        mapStyle: "amap://styles/whitesmoke",
+        viewMode: "2D", //设置地图模式
+        center: [row.longitude, row.latitude],
+      });
+      //设置圆形位置
+      const center = new AMap.LngLat(row.longitude, row.latitude);
+      const radius = row.area*10
+      const marker = new AMap.CircleMarker({
+        title: row.fieldId,
+        center: center,
+        radius: radius,
+        strokeColor: "white",
+        strokeWeight: 2,
+        strokeOpacity: 0.5, //轮廓线透明度
+        fillColor: "rgba(0,135,60)", //圆点填充颜色
+        fillOpacity: 0.5, //圆点填充透明度
+        zIndex: 10, //圆点覆盖物的叠加顺序
+        cursor: "pointer", //鼠标悬停时的鼠标样式
+      });
+      map.add(marker);
+    })
+    .catch(e => {
+      // 在控制台中打印错误，并考虑在用户界面上显示错误消息
+      console.error(e);
+      // 显示错误消息给用户（如果需要）
+    });
 }
 
 getList();

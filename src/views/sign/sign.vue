@@ -7,6 +7,42 @@
       <el-button type="primary" v-else @click="signOut">签退</el-button>
       </el-card>
     </el-row>
+    <el-row>
+      <el-card style="width: 95%;margin: 0.5% auto;text-align: center;padding: 20px;" v-hasPermi="['sign:leave:mana']">
+        <el-table :data="leaveList">
+      <el-table-column label="记录编号" align="center" prop="leaveId" />
+      <el-table-column label="部门编号" align="center" prop="deptId" />
+      <el-table-column label="员工编号" align="center" prop="userId" />
+      <el-table-column label="申请时间" align="center" prop="haninTime" width="180">
+        <template #default="scope">
+          <span>{{ parseTime(scope.row.haninTime, '{y}-{m}-{d}') }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="假期开始时间" align="center" prop="leaveStartTime" width="180">
+        <template #default="scope">
+          <span>{{ parseTime(scope.row.leaveStartTime, '{y}-{m}-{d}') }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="假期结束时间" align="center" prop="leaveEndTime" width="180">
+        <template #default="scope">
+          <span>{{ parseTime(scope.row.leaveEndTime, '{y}-{m}-{d}') }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="申请状态" align="center" prop="leaveState">
+        <template #default="scope">
+          <dict-tag :options="holi_stage" :value="scope.row.leaveState"/>
+        </template>
+      </el-table-column>
+      <el-table-column label="请假事由" align="center" prop="reason" />
+      <el-table-column label="审批片语" align="center" prop="reply" />
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+        <template #default="scope">
+          <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['sign:leave:mana']">审批</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+      </el-card>
+    </el-row>
     <el-row  v-if="show">
       <el-card style="width: 95%;margin: 0.5% auto;text-align: center;padding: 20px;" v-hasPermi="['sign:leave:holi']">
         <h2>假期申请</h2>
@@ -48,42 +84,6 @@
         </el-steps>
       </el-row>
         <el-button type="primary" @click="cancelSub" v-if="!show">撤销申请</el-button>
-      </el-card>
-    </el-row>
-    <el-row>
-      <el-card style="width: 95%;margin: 0.5% auto;text-align: center;padding: 20px;" v-hasPermi="['sign:leave:mana']">
-        <el-table :data="leaveList">
-      <el-table-column label="记录编号" align="center" prop="leaveId" />
-      <el-table-column label="部门编号" align="center" prop="deptId" />
-      <el-table-column label="员工编号" align="center" prop="userId" />
-      <el-table-column label="申请时间" align="center" prop="haninTime" width="180">
-        <template #default="scope">
-          <span>{{ parseTime(scope.row.haninTime, '{y}-{m}-{d}') }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="假期开始时间" align="center" prop="leaveStartTime" width="180">
-        <template #default="scope">
-          <span>{{ parseTime(scope.row.leaveStartTime, '{y}-{m}-{d}') }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="假期结束时间" align="center" prop="leaveEndTime" width="180">
-        <template #default="scope">
-          <span>{{ parseTime(scope.row.leaveEndTime, '{y}-{m}-{d}') }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="申请状态" align="center" prop="leaveState">
-        <template #default="scope">
-          <dict-tag :options="holi_stage" :value="scope.row.leaveState"/>
-        </template>
-      </el-table-column>
-      <el-table-column label="请假事由" align="center" prop="reason" />
-      <el-table-column label="审批片语" align="center" prop="reply" />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-        <template #default="scope">
-          <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['sign:leave:mana']">审批</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
       </el-card>
     </el-row>
 

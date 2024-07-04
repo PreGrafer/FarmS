@@ -1,8 +1,8 @@
 {
-  "name": "ruoyi",
+  "name": "FarmS",
   "version": "3.8.8",
-  "description": "若依管理系统",
-  "author": "若依",
+  "description": "智慧农场管理系统",
+  "author": "Kerwin",
   "license": "MIT",
   "type": "module",
   "scripts": {
@@ -11,11 +11,8 @@
     "build:stage": "vite build --mode staging",
     "preview": "vite preview"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://gitee.com/y_project/RuoYi-Vue.git"
-  },
   "dependencies": {
+    "@amap/amap-jsapi-loader": "^1.0.1",
     "@element-plus/icons-vue": "2.3.1",
     "@vueup/vue-quill": "1.2.0",
     "@vueuse/core": "10.11.0",

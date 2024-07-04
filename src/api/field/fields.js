@@ -1,4 +1,5 @@
 import request from '@/utils/request'
+import axios from "axios";
 
 // 查询农田信息列表
 export function listFields(query) {
@@ -7,6 +8,14 @@ export function listFields(query) {
     method: 'get',
     params: query
   })
+}
+
+export function weatherGet(query) {
+    return axios.request({
+        url: 'https://devapi.qweather.com/v7/weather/7d',
+        method: 'get',
+        params: query
+    })
 }
 
 // 查询农田信息详细
