@@ -96,10 +96,14 @@
         </template>
       </el-table-column>
       <el-table-column label="当前种植的作物id" align="center" prop="currentCropId" />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="信息" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
           <el-button link type="primary" @click="showMap(scope.row)" v-hasPermi="['field:fields:map']">定位</el-button>
           <el-button link type="primary" @click="weather(scope.row)" v-hasPermi="['field:fields:wea']">天气</el-button>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+        <template #default="scope">
           <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['field:fields:edit']">修改</el-button>
           <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['field:fields:remove']">删除</el-button>
         </template>
