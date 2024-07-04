@@ -17,7 +17,7 @@ import com.github.pregrafer.common.constant.Constants;
 import com.github.pregrafer.common.utils.StringUtils;
 import com.github.pregrafer.common.utils.file.FileUploadUtils;
 import com.github.pregrafer.common.utils.file.FileUtils;
-import com.github.pregrafer.framework.config.RuoYiConfig;
+import com.github.pregrafer.framework.config.Config;
 import com.github.pregrafer.framework.config.ServerConfig;
 import com.github.pregrafer.framework.web.domain.AjaxResult;
 
@@ -53,7 +53,7 @@ public class CommonController
                 throw new Exception(StringUtils.format("文件名称({})非法，不允许下载。 ", fileName));
             }
             String realFileName = System.currentTimeMillis() + fileName.substring(fileName.indexOf("_") + 1);
-            String filePath = RuoYiConfig.getDownloadPath() + fileName;
+            String filePath = Config.getDownloadPath() + fileName;
 
             response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
             FileUtils.setAttachmentResponseHeader(response, realFileName);
@@ -78,7 +78,7 @@ public class CommonController
         try
         {
             // 上传文件路径
-            String filePath = RuoYiConfig.getUploadPath();
+            String filePath = Config.getUploadPath();
             // 上传并返回新文件名称
             String fileName = FileUploadUtils.upload(filePath, file);
             String url = serverConfig.getUrl() + fileName;
@@ -104,7 +104,7 @@ public class CommonController
         try
         {
             // 上传文件路径
-            String filePath = RuoYiConfig.getUploadPath();
+            String filePath = Config.getUploadPath();
             List<String> urls = new ArrayList<String>();
             List<String> fileNames = new ArrayList<String>();
             List<String> newFileNames = new ArrayList<String>();
@@ -146,7 +146,7 @@ public class CommonController
                 throw new Exception(StringUtils.format("资源文件({})非法，不允许下载。 ", resource));
             }
             // 本地资源路径
-            String localPath = RuoYiConfig.getProfile();
+            String localPath = Config.getProfile();
             // 数据库资源地址
             String downloadPath = localPath + StringUtils.substringAfter(resource, Constants.RESOURCE_PREFIX);
             // 下载名称

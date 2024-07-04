@@ -17,7 +17,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import com.github.pregrafer.common.utils.DateUtils;
 import com.github.pregrafer.common.utils.StringUtils;
 import com.github.pregrafer.common.utils.uuid.IdUtils;
-import com.github.pregrafer.framework.config.RuoYiConfig;
+import com.github.pregrafer.framework.config.Config;
 
 /**
  * 文件处理工具类
@@ -73,7 +73,7 @@ public class FileUtils
      */
     public static String writeImportBytes(byte[] data) throws IOException
     {
-        return writeBytes(data, RuoYiConfig.getImportPath());
+        return writeBytes(data, Config.getImportPath());
     }
 
     /**
@@ -274,7 +274,7 @@ public class FileUtils
     }
 
     /**
-     * 获取不带后缀文件名称 /profile/upload/2022/04/16/ruoyi.png -- ruoyi
+     * 获取不带后缀文件名称 /profile/upload/2022/04/16/farms.png -- ruoyi
      * 
      * @param fileName 路径名称
      * @return 没有文件路径和后缀的名称

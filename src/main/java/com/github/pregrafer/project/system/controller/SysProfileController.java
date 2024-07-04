@@ -15,7 +15,7 @@ import com.github.pregrafer.common.utils.file.FileUploadUtils;
 import com.github.pregrafer.common.utils.file.MimeTypeUtils;
 import com.github.pregrafer.framework.aspectj.lang.annotation.Log;
 import com.github.pregrafer.framework.aspectj.lang.enums.BusinessType;
-import com.github.pregrafer.framework.config.RuoYiConfig;
+import com.github.pregrafer.framework.config.Config;
 import com.github.pregrafer.framework.security.LoginUser;
 import com.github.pregrafer.framework.security.service.TokenService;
 import com.github.pregrafer.framework.web.controller.BaseController;
@@ -131,7 +131,7 @@ public class SysProfileController extends BaseController
         if (!file.isEmpty())
         {
             LoginUser loginUser = getLoginUser();
-            String avatar = FileUploadUtils.upload(RuoYiConfig.getAvatarPath(), file, MimeTypeUtils.IMAGE_EXTENSION);
+            String avatar = FileUploadUtils.upload(Config.getAvatarPath(), file, MimeTypeUtils.IMAGE_EXTENSION);
             if (userService.updateUserAvatar(loginUser.getUsername(), avatar))
             {
                 AjaxResult ajax = AjaxResult.success();

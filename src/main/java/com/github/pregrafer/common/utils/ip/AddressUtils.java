@@ -7,7 +7,7 @@ import com.alibaba.fastjson2.JSONObject;
 import com.github.pregrafer.common.constant.Constants;
 import com.github.pregrafer.common.utils.StringUtils;
 import com.github.pregrafer.common.utils.http.HttpUtils;
-import com.github.pregrafer.framework.config.RuoYiConfig;
+import com.github.pregrafer.framework.config.Config;
 
 /**
  * 获取地址类
@@ -31,7 +31,7 @@ public class AddressUtils
         {
             return "内网IP";
         }
-        if (RuoYiConfig.isAddressEnabled())
+        if (Config.isAddressEnabled())
         {
             try
             {

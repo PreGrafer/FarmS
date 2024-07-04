@@ -31,7 +31,7 @@ public class SwaggerConfig
 {
     /** 系统基础配置 */
     @Autowired
-    private RuoYiConfig ruoyiConfig;
+    private Config config;
 
     /** 是否开启swagger */
     @Value("${swagger.enabled}")
@@ -116,9 +116,9 @@ public class SwaggerConfig
                 // 描述
                 .description("描述：用于管理智慧农场")
                 // 作者信息
-                .contact(new Contact(ruoyiConfig.getName(), null, null))
+                .contact(new Contact(config.getName(), null, null))
                 // 版本
-                .version("版本号:" + ruoyiConfig.getVersion())
+                .version("版本号:" + config.getVersion())
                 .build();
     }
 }

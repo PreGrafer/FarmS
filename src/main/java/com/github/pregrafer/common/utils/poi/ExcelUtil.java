@@ -83,7 +83,7 @@ import com.github.pregrafer.framework.aspectj.lang.annotation.Excel;
 import com.github.pregrafer.framework.aspectj.lang.annotation.Excel.ColumnType;
 import com.github.pregrafer.framework.aspectj.lang.annotation.Excel.Type;
 import com.github.pregrafer.framework.aspectj.lang.annotation.Excels;
-import com.github.pregrafer.framework.config.RuoYiConfig;
+import com.github.pregrafer.framework.config.Config;
 import com.github.pregrafer.framework.web.domain.AjaxResult;
 
 /**
@@ -1409,7 +1409,7 @@ public class ExcelUtil<T>
      */
     public String getAbsoluteFile(String filename)
     {
-        String downloadPath = RuoYiConfig.getDownloadPath() + filename;
+        String downloadPath = Config.getDownloadPath() + filename;
         File desc = new File(downloadPath);
         if (!desc.getParentFile().exists())
         {

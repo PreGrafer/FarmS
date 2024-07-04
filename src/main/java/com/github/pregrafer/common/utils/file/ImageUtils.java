@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.github.pregrafer.common.constant.Constants;
 import com.github.pregrafer.common.utils.StringUtils;
-import com.github.pregrafer.framework.config.RuoYiConfig;
+import com.github.pregrafer.framework.config.Config;
 
 /**
  * 图片处理工具类
@@ -79,7 +79,7 @@ public class ImageUtils
             else
             {
                 // 本机地址
-                String localPath = RuoYiConfig.getProfile();
+                String localPath = Config.getProfile();
                 String downloadPath = localPath + StringUtils.substringAfter(url, Constants.RESOURCE_PREFIX);
                 in = new FileInputStream(downloadPath);
             }

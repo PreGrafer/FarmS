@@ -13,7 +13,7 @@ import com.github.pregrafer.common.exception.file.InvalidExtensionException;
 import com.github.pregrafer.common.utils.DateUtils;
 import com.github.pregrafer.common.utils.StringUtils;
 import com.github.pregrafer.common.utils.uuid.Seq;
-import com.github.pregrafer.framework.config.RuoYiConfig;
+import com.github.pregrafer.framework.config.Config;
 
 /**
  * 文件上传工具类
@@ -35,7 +35,7 @@ public class FileUploadUtils
     /**
      * 默认上传的地址
      */
-    private static String defaultBaseDir = RuoYiConfig.getProfile();
+    private static String defaultBaseDir = Config.getProfile();
 
     public static void setDefaultBaseDir(String defaultBaseDir)
     {
@@ -142,7 +142,7 @@ public class FileUploadUtils
 
     public static final String getPathFileName(String uploadDir, String fileName) throws IOException
     {
-        int dirLastIndex = RuoYiConfig.getProfile().length() + 1;
+        int dirLastIndex = Config.getProfile().length() + 1;
         String currentDir = StringUtils.substring(uploadDir, dirLastIndex);
         return Constants.RESOURCE_PREFIX + "/" + currentDir + "/" + fileName;
     }
