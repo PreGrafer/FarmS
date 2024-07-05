@@ -16,6 +16,5 @@ public class Application
     {
         // System.setProperty("spring.devtools.restart.enabled", "false");
         SpringApplication.run(Application.class, args);
-        System.out.println("智慧农场启动成功\n");
     }
 }
