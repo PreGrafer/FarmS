@@ -172,7 +172,7 @@ public class LeaveRecordController extends BaseController
      *
      * 上传一个部门id 返回正常签到次数，早退迟到次数，请假天数
      */
-    @GetMapping(value = "/month/{deptId}")
+    @GetMapping(value = "/deptMonth/{deptId}")
     public AjaxResult getMonthByDeptID(@PathVariable Long deptId)
     {
         return success(leaveRecordService.selectLeaveRecordByDeptIdByMonth(deptId));
@@ -182,7 +182,7 @@ public class LeaveRecordController extends BaseController
      *
      * 上传一个userid 返回正常签到次数，早退迟到次数，请假天数
      */
-    @GetMapping(value = "/month/{userId}")
+    @GetMapping(value = "/userMonth/{userId}")
     public AjaxResult getMonthByUserID(@PathVariable Long userId)
     {
         return success(leaveRecordService.selectLeaveRecordByUserIdByMonth(userId));

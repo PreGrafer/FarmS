@@ -26,6 +26,40 @@ public class AttendanceRecord extends BaseEntity
 
     /** 请假天数 */
     private Integer leaveDays;
+
+    public Integer getLastNormalSignInCount() {
+        return LastNormalSignInCount;
+    }
+
+    public void setLastNormalSignInCount(Integer lastNormalSignInCount) {
+        LastNormalSignInCount = lastNormalSignInCount;
+    }
+
+    public Integer getLastEarlyLeaveAndLateArrivalCount() {
+        return lastEarlyLeaveAndLateArrivalCount;
+    }
+
+    public void setLastEarlyLeaveAndLateArrivalCount(Integer lastEarlyLeaveAndLateArrivalCount) {
+        this.lastEarlyLeaveAndLateArrivalCount = lastEarlyLeaveAndLateArrivalCount;
+    }
+
+    public Integer getLastLeaveDays() {
+        return lastLeaveDays;
+    }
+
+    public void setLastLeaveDays(Integer lastLeaveDays) {
+        this.lastLeaveDays = lastLeaveDays;
+    }
+
+    /** 上个月正常签到次数 */
+    private Integer LastNormalSignInCount;
+
+    /** 上个月早退迟到次数 */
+    private Integer lastEarlyLeaveAndLateArrivalCount;
+
+    /** 上个月请假天数 */
+    private Integer lastLeaveDays;
+
     public Integer getNormalSignInCount() {
         return normalSignInCount;
     }

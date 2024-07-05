@@ -59,6 +59,12 @@ public class SysProfileController extends BaseController
         AjaxResult ajax = AjaxResult.success();
         ajax.put("userId", loginUser.getUserId());
         ajax.put("deptId", loginUser.getDeptId());
+        if(loginUser.getUser().getPostIds() == null){
+            ajax.put("post",1);
+        }
+        else {
+            ajax.put("post",loginUser.getUser().getPostIds()[0]);
+        }
         return ajax;
     }
 

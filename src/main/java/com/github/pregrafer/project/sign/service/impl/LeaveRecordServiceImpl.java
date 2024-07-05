@@ -1,5 +1,9 @@
 package com.github.pregrafer.project.sign.service.impl;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -26,6 +30,8 @@ public class LeaveRecordServiceImpl implements ILeaveRecordService
 {
     @Autowired
     private LeaveRecordMapper leaveRecordMapper;
+
+    @Autowired
     private SignRecordMapper signRecordMapper;
     /**
      * 查询请假记录
@@ -131,139 +137,88 @@ public class LeaveRecordServiceImpl implements ILeaveRecordService
     }
 
     @Override
-    public AttendanceRecord selectLeaveRecordByUserIdByMonth(Long userID) {
-        List<LeaveRecord> leaveRecords=new ArrayList<LeaveRecord>();
-        leaveRecords=leaveRecordMapper.selectLeaveRecordByUserId(userID,1L);
-        Date currentDate = new Date();
-        int allLeaveTime = calculateTotalLeaveTime(leaveRecords, currentDate);
-        List<SignRecord> signRecords=new ArrayList<SignRecord>();
-        signRecords=signRecordMapper.selectSignRecordByUserId(userID);
-        currentDate = new Date();
-        Calendar currentCalendar = Calendar.getInstance();
-        currentCalendar.setTime(currentDate);
-        int currentYear = currentCalendar.get(Calendar.YEAR);
-        int currentMonth = currentCalendar.get(Calendar.MONTH);
-        // 初始化计数器
-        int normalSignInCount = 0;
-        int earlyLeaveAndLateArrivalCount = 0;
+public AttendanceRecord selectLeaveRecordByUserIdByMonth(Long userID) {
+    LocalDate currentDate = LocalDate.now();
+    LocalDate lastMonthDate = currentDate.minusMonths(1);
+    return generateAttendanceRecord(
+        leaveRecordMapper.selectLeaveRecordByUserId(userID, 1L),
+        signRecordMapper.selectSignRecordByUserId(userID),
+        currentDate,
+        lastMonthDate
+    );
+}
 
-        // 遍历 signRecords 计算计数
-        for (SignRecord record : signRecords) {
-            Calendar signCalendar = Calendar.getInstance();
-            signCalendar.setTime(record.getSignTime());
-            int signYear = signCalendar.get(Calendar.YEAR);
-            int signMonth = signCalendar.get(Calendar.MONTH);
+@Override
+public AttendanceRecord selectLeaveRecordByDeptIdByMonth(Long deptID) {
+    LocalDate currentDate = LocalDate.now();
+    LocalDate lastMonthDate = currentDate.minusMonths(1);
+    return generateAttendanceRecord(
+        leaveRecordMapper.selectLeaveRecordByDeptId(deptID, 1L),
+        signRecordMapper.selectSignRecordByDeptId(deptID),
+        currentDate,
+        lastMonthDate
+    );
+}
 
-            // 判断 signTime 是否为当前月
-            if (signYear == currentYear && signMonth == currentMonth) {
-                if ("1".equals(record.getSignState())) {
-                    earlyLeaveAndLateArrivalCount++;
-                } else if ("0".equals(record.getSignState())) {
-                    normalSignInCount++;
-                }
+private AttendanceRecord generateAttendanceRecord(List<LeaveRecord> leaveRecords, List<SignRecord> signRecords, LocalDate currentDate, LocalDate lastMonthDate) {
+    int allLeaveTimeCurrentMonth = calculateTotalLeaveTime(leaveRecords, currentDate);
+    int allLeaveTimeLastMonth = calculateTotalLeaveTime(leaveRecords, lastMonthDate);
+
+    int normalSignInCountCurrentMonth = 0;
+    int earlyLeaveAndLateArrivalCountCurrentMonth = 0;
+    int normalSignInCountLastMonth = 0;
+    int earlyLeaveAndLateArrivalCountLastMonth = 0;
+
+    for (SignRecord record : signRecords) {
+        LocalDateTime signTime = record.getSignTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        if (signTime.getYear() == currentDate.getYear() && signTime.getMonthValue() == currentDate.getMonthValue()) {
+            if ("1".equals(record.getSignState())) {
+                earlyLeaveAndLateArrivalCountCurrentMonth++;
+            } else if ("0".equals(record.getSignState())) {
+                normalSignInCountCurrentMonth++;
             }
         }
-        AttendanceRecord attendanceRecord=new AttendanceRecord();
-        attendanceRecord.setLeaveDays(allLeaveTime);
-        attendanceRecord.setEarlyLeaveAndLateArrivalCount(earlyLeaveAndLateArrivalCount);
-        attendanceRecord.setNormalSignInCount(normalSignInCount);
-        return attendanceRecord;
-    }
-
-    @Override
-    public AttendanceRecord selectLeaveRecordByDeptIdByMonth(Long deptID) {
-        List<LeaveRecord> leaveRecords=new ArrayList<LeaveRecord>();
-        leaveRecords=leaveRecordMapper.selectLeaveRecordByDeptId(deptID,1L);
-        Date currentDate = new Date();
-        int allLeaveTime = calculateTotalLeaveTime(leaveRecords, currentDate);
-        List<SignRecord> signRecords=new ArrayList<SignRecord>();
-        signRecords=signRecordMapper.selectSignRecordByDeptId(deptID);
-        currentDate = new Date();
-        Calendar currentCalendar = Calendar.getInstance();
-        currentCalendar.setTime(currentDate);
-        int currentYear = currentCalendar.get(Calendar.YEAR);
-        int currentMonth = currentCalendar.get(Calendar.MONTH);
-        // 初始化计数器
-        int normalSignInCount = 0;
-        int earlyLeaveAndLateArrivalCount = 0;
-
-        // 遍历 signRecords 计算计数
-        for (SignRecord record : signRecords) {
-            Calendar signCalendar = Calendar.getInstance();
-            signCalendar.setTime(record.getSignTime());
-            int signYear = signCalendar.get(Calendar.YEAR);
-            int signMonth = signCalendar.get(Calendar.MONTH);
-
-            // 判断 signTime 是否为当前月
-            if (signYear == currentYear && signMonth == currentMonth) {
-                if ("1".equals(record.getSignState())) {
-                    earlyLeaveAndLateArrivalCount++;
-                } else if ("0".equals(record.getSignState())) {
-                    normalSignInCount++;
-                }
+        if (signTime.getYear() == lastMonthDate.getYear() && signTime.getMonthValue() == lastMonthDate.getMonthValue()) {
+            if ("1".equals(record.getSignState())) {
+                earlyLeaveAndLateArrivalCountLastMonth++;
+            } else if ("0".equals(record.getSignState())) {
+                normalSignInCountLastMonth++;
             }
         }
-        AttendanceRecord attendanceRecord=new AttendanceRecord();
-        attendanceRecord.setLeaveDays(allLeaveTime);
-        attendanceRecord.setEarlyLeaveAndLateArrivalCount(earlyLeaveAndLateArrivalCount);
-        attendanceRecord.setNormalSignInCount(normalSignInCount);
-        return attendanceRecord;
     }
 
-    public int calculateTotalLeaveTime(List<LeaveRecord> leaveRecords, Date currentDate) {
-        int totalLeaveTime = 0;
+    AttendanceRecord attendanceRecord = new AttendanceRecord();
+    attendanceRecord.setLeaveDays(allLeaveTimeCurrentMonth);
+    attendanceRecord.setEarlyLeaveAndLateArrivalCount(earlyLeaveAndLateArrivalCountCurrentMonth);
+    attendanceRecord.setNormalSignInCount(normalSignInCountCurrentMonth);
+    attendanceRecord.setLastLeaveDays(allLeaveTimeLastMonth);
+    attendanceRecord.setLastEarlyLeaveAndLateArrivalCount(earlyLeaveAndLateArrivalCountLastMonth);
+    attendanceRecord.setLastNormalSignInCount(normalSignInCountLastMonth);
+    return attendanceRecord;
+}
 
-        // 获取系统时间的年和月
-        Calendar currentCalendar = Calendar.getInstance();
-        currentCalendar.setTime(currentDate);
-        int currentYear = currentCalendar.get(Calendar.YEAR);
-        int currentMonth = currentCalendar.get(Calendar.MONTH);
+public int calculateTotalLeaveTime(List<LeaveRecord> leaveRecords, LocalDate date) {
+    int totalLeaveTime = 0;
 
-        for (LeaveRecord record : leaveRecords) {
-            Calendar startCalendar = Calendar.getInstance();
-            startCalendar.setTime(record.getLeaveStartTime());
-            int startYear = startCalendar.get(Calendar.YEAR);
-            int startMonth = startCalendar.get(Calendar.MONTH);
+    for (LeaveRecord record : leaveRecords) {
+        LocalDate start = record.getLeaveStartTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate end = record.getLeaveEndTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
-            Calendar endCalendar = Calendar.getInstance();
-            endCalendar.setTime(record.getLeaveEndTime());
-            int endYear = endCalendar.get(Calendar.YEAR);
-            int endMonth = endCalendar.get(Calendar.MONTH);
-
-            if (startYear == currentYear && startMonth == currentMonth && endYear == currentYear && endMonth == currentMonth) {
-                // leaveStartTime与系统时间同月，leaveEndTime与系统时间同月
-                totalLeaveTime += calculateDaysBetween(record.getLeaveStartTime(), record.getLeaveEndTime());
-            } else if (startYear == currentYear && startMonth == currentMonth && endYear == currentYear && endMonth != currentMonth) {
-                // leaveStartTime与系统时间同月，leaveEndTime与系统时间不同月
-                totalLeaveTime += calculateDaysBetween(record.getLeaveStartTime(), getEndOfMonth(currentDate));
-            } else if (startYear == currentYear && startMonth != currentMonth && endYear == currentYear && endMonth == currentMonth) {
-                // leaveStartTime与系统时间不同月，leaveEndTime与系统时间同月
-                totalLeaveTime += calculateDaysBetween(getStartOfMonth(currentDate), record.getLeaveEndTime());
-            }
+        if (start.getYear() == date.getYear() && start.getMonthValue() == date.getMonthValue() &&
+            end.getYear() == date.getYear() && end.getMonthValue() == date.getMonthValue()) {
+            totalLeaveTime += calculateDaysBetween(start, end);
+        } else if (start.getYear() == date.getYear() && start.getMonthValue() == date.getMonthValue()) {
+            totalLeaveTime += calculateDaysBetween(start, date.withDayOfMonth(date.lengthOfMonth()));
+        } else if (end.getYear() == date.getYear() && end.getMonthValue() == date.getMonthValue()) {
+            totalLeaveTime += calculateDaysBetween(date.withDayOfMonth(1), end);
         }
-
-        return totalLeaveTime;
     }
 
-    // 计算两个日期之间的天数
-    public int calculateDaysBetween(Date startDate, Date endDate) {
-        long diffInMillis = endDate.getTime() - startDate.getTime();
-        return (int) TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS);
-    }
+    return totalLeaveTime;
+}
 
-    // 获取指定日期所在月的月初
-    public Date getStartOfMonth(Date date) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        calendar.set(Calendar.DAY_OF_MONTH, 1);
-        return calendar.getTime();
-    }
+public int calculateDaysBetween(LocalDate startDate, LocalDate endDate) {
+    return Period.between(startDate, endDate).getDays();
+}
 
-    // 获取指定日期所在月的月底
-    public Date getEndOfMonth(Date date) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
-        return calendar.getTime();
-    }
 }

@@ -47,7 +47,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectLeaveRecordByUserId" parameterType="map" resultMap="LeaveRecordResult">
         <include refid="selectLeaveRecordVo"/>
-        user_id = #{userId} and leave_state = #{leaveState}
+        where user_id = #{userId} and leave_state = #{leaveState}
     </select>
 
     <select id="selectLeaveRecordByDeptId" parameterType="map" resultMap="LeaveRecordResult">
