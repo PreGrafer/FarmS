@@ -20,23 +20,8 @@
           </el-carousel-item>
         </el-carousel>
       </el-col>
-      <el-col :sm="24" :lg="24">
-        <blockquote class="text-warning" style="font-size: 14px">
-          <br />
-          <el-link
-            href="https://cloud.tencent.com/redirect.php?redirect=1025&cps_key=198c8df2ed259157187173bc7f4f32fd&from=console"
-            type="primary"
-            target="_blank"
-            >https://cloud.tencent.com/redirect.php?redirect=1025&cps_key=198c8df2ed259157187173bc7f4f32fd&from=console</el-link
-          >
-          <h4 class="text-danger">
-            云产品通用红包，可叠加官网常规优惠使用。(仅限新用户)
-          </h4>
-        </blockquote>
-        <hr />
-      </el-col>
     </el-row>
-    <el-divider />
+    <el-divider/>
   </div>
 </template>
 
