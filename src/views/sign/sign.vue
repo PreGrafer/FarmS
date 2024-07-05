@@ -1,10 +1,10 @@
 <template>
   <div>
     <el-row>
-      <el-card style="width: 95%;margin: 1% auto;text-align: center;padding: 20px;" v-hasPermi="['sign:record:check']">
+      <el-card style="width: 95%;margin: 0.5% auto;text-align: center;padding: 20px;" v-hasPermi="['sign:record:check']">
       <h2>当前时间: {{ currentTime }}</h2>
-      <el-button type="primary" v-if="isMorning" @click="signIn">签到</el-button>
-      <el-button type="primary" v-else @click="signOut">签退</el-button>
+        <el-button type="primary" v-if="isMorning" @click="signIn">签到</el-button>
+        <el-button type="primary" v-else @click="signOut">签退</el-button>
       </el-card>
     </el-row>
     <el-row>
@@ -86,6 +86,19 @@
         <el-button type="primary" @click="cancelSub" v-if="!show">撤销申请</el-button>
       </el-card>
     </el-row>
+    <el-row>
+      <el-card style="width: 95%;height:450px;margin: 0.5% auto;text-align: center;padding: 20px;" v-hasPermi="['sign:record:check']">
+          <div style="width: 300px;text-align: center;height: 300px;margin: 0 50px;display: inline-block;">
+            <h2>个人绩效</h2>
+            <h2>上月工资: {{money}}</h2>
+            <v-chart :option="userMon_data"/>
+          </div>
+          <div style="width: 300px;text-align: center;height: 300px;margin: 0 50px;display: inline-block;">
+            <h2>部门绩效</h2>
+            <v-chart :option="deptMon_data"/>
+          </div>
+      </el-card>
+    </el-row>
 
     <!-- 添加或修改请假记录对话框 -->
     <el-dialog :title="审批请假记录" v-model="open" width="500px" append-to-body v-hasPermi="['sign:leave:mana']">
@@ -151,7 +164,7 @@ import { ref,reactive, computed, onMounted } from 'vue';
 import {getIds} from "@/api/system/user.js";
 import {check} from "@/api/sign/record.js";
 import {ElMessage} from "element-plus";
-import {cancelLeave, getLastLeave, leaveApply, getLeave, deptListLeave, updateState} from "@/api/sign/leave.js";
+import {cancelLeave, getLastLeave, leaveApply, getLeave, deptListLeave, updateState, userMonth,deptMonth} from "@/api/sign/leave.js";
 
 const currentTime = ref(new Date().toLocaleTimeString());
 
@@ -168,8 +181,8 @@ const hour = computed(() => new Date().getHours());
 const isMorning = computed(() => hour.value < 12);
 const data = reactive({
   info:{
-    deptId: 0,
-    userId: 0,
+    deptId: null,
+    userId: null,
     signType: "",
   },
   holi: {
@@ -199,6 +212,33 @@ const hasLeave = ref(false);
 const total = ref(0);
 const countRef = ref(0);
 const open = ref(false);
+const money = ref(0);
+const userMon_data = ref({
+  xAxis: {
+    type: 'category',
+    data: ['正常签到','早退迟到', '请假天数']
+  },
+  yAxis: {
+    type: 'value'
+  },
+  series: [{
+    data: null,
+    type: 'bar'
+  }]
+});
+const deptMon_data = ref({
+  xAxis: {
+    type: 'category',
+    data: ['正常签到','早退迟到', '请假天数']
+  },
+  yAxis: {
+    type: 'value'
+  },
+  series: [{
+    data: null,
+    type: 'bar'
+  }]
+});
 
 function reset() {
   form.value = {
@@ -220,8 +260,20 @@ const { holi ,rules, holiRef, form} = toRefs(data);
 function getInfo() {
   countRef.value += 1;
   getIds().then(response => {
+    console.log(response)
     data.info.userId = response.userId;
     data.info.deptId = response.deptId;
+    data.info.post = response.post;
+    switch (response.post){
+      case 1:
+        money.value = 20000;
+        break;
+      case 2:
+        money.value = 12000;
+        break;
+      default:
+        money.value = 8000;
+    }
     data.holi.userId = response.userId;
     data.holi.deptId = response.deptId;
     console.log(data.info)
@@ -237,6 +289,20 @@ function getInfo() {
       leaveList.value = response.rows;
       total.value = response.total;
       loading.value = false;
+    });
+    userMonth(data.info.userId).then(response=>{
+      userMon_data.value.series[0].data = [ response.data.normalSignInCount,response.data.earlyLeaveAndLateArrivalCount, response.data.leaveDays,]
+      var all = 0.0+response.data.lastNormalSignInCount +parseFloat(response.data.lastEarlyLeaveAndLateArrivalCount)/2 + response.data.lastLeaveDays*2;
+      if (all <= 50) {
+        if(all !== 0.0){
+          money.value *= 0.8;
+        }
+      } else if(all >= 100){
+        response.data.lastLeaveDays >=1 ? money.value *= 1.1 : money.value *= 1.2;
+      }
+    });
+    deptMonth(data.info.deptId).then(response=>{
+      deptMon_data.value.series[0].data = [ response.data.normalSignInCount,response.data.earlyLeaveAndLateArrivalCount, response.data.leaveDays,]
     });
   });
 };

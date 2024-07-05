@@ -401,7 +401,7 @@ function handleExport() {
 function weather(row){
   wea_config.value.location = row.longitude + ',' + row.latitude;
   wea_open.value = true;
-  wea_title.value = row.fieldId + "未来7天天气预报";
+  wea_title.value = row.fieldId + "号农场 未来7天天气预报";
   weatherGet(wea_config.value).then(response=>{
     weatherData.value=response.data.daily;
   })
@@ -410,7 +410,7 @@ function weather(row){
 function showMap(row) {
   // 假设 map_open 和 map_title 已经在某处定义（可能是 Vue 的 ref 或其他状态管理）
   map_open.value = true;
-  map_title.value = row.fieldId + "农田定位";
+  map_title.value = row.fieldId + "号农田定位";
 
   window._AMapSecurityConfig = {
     // 请确保不要公开您的 JS 安全代码
@@ -434,13 +434,13 @@ function showMap(row) {
       const map = new AMap.Map("map", {
         resizeEnable: true,
         zoom: 15,
-        mapStyle: "amap://styles/whitesmoke",
+        layers: [new AMap.TileLayer.Satellite()],
         viewMode: "2D", //设置地图模式
         center: [row.longitude, row.latitude],
       });
       //设置圆形位置
       const center = new AMap.LngLat(row.longitude, row.latitude);
-      const radius = row.area*10
+      const radius = row.area *5
       const marker = new AMap.CircleMarker({
         title: row.fieldId,
         center: center,

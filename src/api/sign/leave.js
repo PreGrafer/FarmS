@@ -9,7 +9,20 @@ export function listLeave(query) {
   })
 }
 
-// 查询请假记录列表
+
+export function userMonth(userId) {
+  return request({
+    url: '/sign/leave/userMonth/'+userId,
+    method: 'get'
+  })
+}
+export function deptMonth(deptId) {
+  return request({
+    url: '/sign/leave/deptMonth/'+deptId,
+    method: 'get'
+  })
+}
+
 export function deptListLeave(deptId) {
   return request({
     url: '/sign/leave/list/'+ deptId,
